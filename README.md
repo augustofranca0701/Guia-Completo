@@ -78,7 +78,7 @@ backend-pi/
  │   ├── config/
  │   │   └── db.ts
  │   ├── models/
- │   │   └── User.ts
+ │   │   └── userModel.ts
  │   ├── repositories/
  │   │   └── userRepository.ts
  │   ├── services/
@@ -126,10 +126,36 @@ const pool = new Pool({
   database: process.env.DB_NAME
 });
 
-pool.on('connect', () => console.log('Conectado ao PostgreSQL.'));
+// ---------------------------------------------
+// Criação automática da tabela (migrations simples)
+// ---------------------------------------------
+const createTable = async () => {
+  const query = `
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      email VARCHAR(150) NOT NULL UNIQUE,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `;
+
+  try {
+    await pool.query(query);
+    console.log('Tabela "users" verificada/criada.');
+  } catch (err) {
+    console.error('Erro ao criar tabela users:', err);
+  }
+};
+
+pool.on('connect', () => {
+  console.log('Conectado ao PostgreSQL.');
+  createTable(); // ← EXECUTA AQUI
+});
+
 pool.on('error', err => console.error('Erro no pool:', err));
 
 export default pool;
+
 ```
 
 ---
@@ -175,7 +201,7 @@ export async function create(data: CreateUserDTO): Promise<User> {
      RETURNING *`,
     [data.name, data.email]
   );
-  return result.rows[0];
+  return result.rows[0]!;
 }
 
 export async function update(id: number, data: Partial<CreateUserDTO>): Promise<User | null> {

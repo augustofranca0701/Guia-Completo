@@ -4,7 +4,9 @@
   "description": "Este documento descreve passo a passo como criar uma API REST profissional usando:\r - Node.js\r - TypeScript\r - Express\r - PostgreSQL com Pool\r - Variáveis de ambiente via .env\r - Estrutura de pastas organizada\r - CRUD completo com rotas prefixadas",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "ts-node-dev --transpile-only --ignore-watch node_modules src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,7 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^24.10.1",
+    "@types/pg": "^8.15.6",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.9.3"
   }
